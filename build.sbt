@@ -10,5 +10,8 @@ libraryDependencies ++= Seq(
   jdbc,
   anorm,
   cache,
-  ws
+  ws,
+  "org.webjars" %% "webjars-play" % "2.3.0-3",
+  "org.webjars" % "angularjs" % "1.3.15",
+  "org.webjars" % "bootstrap" % "3.3.4"
 )
