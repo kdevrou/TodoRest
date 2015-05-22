@@ -5,6 +5,35 @@
 # Home page
 GET     /                           controllers.Application.index
 
+# Authentication endpoints
+POST    /login                      controllers.Application.login
+POST    /logout                     controllers.Application.logout
+
+# Users
+GET     /users                      controllers.Tasks.get
+GET     /users/:id                  controllers.Tasks.get(id)
+POST    /users                      controllers.Tasks.create
+PUT     /users/:id                  controllers.Tasks.update(id)
+DELETE  /users/:id                  controllers.Tasks.delete(id)
+
+
+# Lists
+GET     /users/:userId/lists        controllers.Lists.get(userId)
+GET     /users/:userId/lists/:id    controllers.Lists.get(userId, id)
+POST    /users/:userId/lists        controllers.Lists.create(userId)
+PUT     /users/:userId/lists/:id    controllers.Lists.update(userId, id)
+DELETE  /users/:userId/lists/:id    controllers.Lists.delete(userId, id)
+
+
+# Tasks
+GET     /lists/:listId/tasks        controllers.Tasks.get(userId)
+GET     /lists/:listId/tasks/:id    controllers.Tasks.get(userId, id)
+POST    /lists/:listId/tasks        controllers.Tasks.create(userId)
+PUT     /lists/:listId/tasks/:id    controllers.Tasks.update(userId, id)
+DELETE  /lists/:listId/tasks/:id    controllers.Tasks.delete(userId, id)
+
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /webjars/*file              controllers.WebJarAssets.at(file)
