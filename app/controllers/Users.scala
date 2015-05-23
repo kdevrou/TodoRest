@@ -1,13 +1,19 @@
 package controllers
 
+import models.User
+import play.api.libs.json.Json
 import play.api.mvc._
 
 /**
  * Created by Kevin on 5/21/2015.
  */
-class Users extends Controller {
+object Users extends Controller with Security {
 
-  def get = TODO
+  def getAll = HasToken() { _ => currentId => implicit  request =>
+    User.findOneById (currentId) map { user =>
+      Ok(Json.toJson(user))
+    } getOrElse NotFound (Json.obj("err" -> "User Not Found"))
+  }
 
   def get(id: Long) = TODO
 
