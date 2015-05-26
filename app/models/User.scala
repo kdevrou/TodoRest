@@ -56,15 +56,44 @@ object User {
 
   val multiParser: ResultSetParser[Seq[User]] = parser *
 
-  def findOneById(id: Long): Option[User] = DB.withConnection { implicit connection =>
-    SQL("SELECT * FROM usertable WHERE id = {id}").on('id -> id).as(parser.singleOpt)
-  }
-
+  /*authenticate user*/
   def findByEmailAndPassword(email: String, password: String): Option[User] = DB.withConnection {
     Logger.debug(s"received email: $email and password: $password")
     implicit connection =>
       SQL("SELECT * FROM usertable WHERE email = {email} AND password = {password}").on(
         'email -> email, 'password -> password
       ).as(parser.singleOpt)
+  }
+
+  /*select all users*/
+  def findAll: Seq[User] = DB.withConnection { implicit connection =>
+    SQL("SELECT * FROM usertable where inactive = 0").as(parser *)
+  }
+
+  /*find user by id*/
+  def findOneById(id: Long): Option[User] = DB.withConnection { implicit connection =>
+    SQL("SELECT * FROM usertable WHERE id = {id} and inactive = 0").on('id -> id).as(parser.singleOpt)
+  }
+
+  def create(name: String, email: String, password: String): Unit = DB.withConnection { implicit connection =>
+    SQL("INSERT INTO usertable (name, email, password) VALUES ({name}, {email}, {password})")
+      .on('name -> name, 'email -> email, 'password -> password)
+  }
+
+  def update(id: Long, name: String, email: String, password: String): Unit = DB.withConnection { implicit connection =>
+    SQL(
+      """
+        |UPDATE usertable
+        |SET name = {name}
+        |   ,email = {email}
+        |   ,password = {password}
+        |WHERE id = {id}
+      """.stripMargin)
+      .on('id -> id, 'name -> name, 'email -> email, 'password -> password)
+  }
+
+  def delete(id: Long): Unit = DB.withConnection { implicit connection =>
+    SQL("UPDATE usertable SET inactive = 1 where id = {id}")
+      .on('id -> id)
   }
 }
