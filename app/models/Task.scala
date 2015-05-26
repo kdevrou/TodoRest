@@ -5,7 +5,11 @@ import org.joda.time.DateTime
 /**
  * Created by Kevin on 5/21/2015.
  */
-case class Task(id: Long, listId: Long, description: String, completedDate: Option[DateTime], createdDate: DateTime)
+case class Task(id: Long,
+                listId: Long,
+                description: String,
+                completedDate: Option[DateTime],
+                createdDate: DateTime)
 
 object Task {
   import play.api.libs.json._
