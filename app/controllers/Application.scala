@@ -20,7 +20,9 @@ trait Security { self: Controller =>
     Action(p) { implicit request =>
       val maybeToken = request.headers.get(AuthTokenHeader).orElse(request.getQueryString(AuthTokenUrlKey))
       maybeToken flatMap { token =>
+        Logger.debug(s"found token: $token")
         Cache.getAs[Long](token) map { userid =>
+          Logger.debug(s"found userid: $userid")
           f(token)(userid)(request)
         }
       } getOrElse Unauthorized(Json.obj("err" -> "No Token"))
