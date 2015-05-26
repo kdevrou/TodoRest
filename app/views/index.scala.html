@@ -14,8 +14,8 @@
           type: "POST",
           url: "login",
           data: JSON.stringify(data),
-          success: function(){
-            window.location.href = window.location.href + 'users';
+          success: function(d, status, xhr){
+            window.location.href = window.location.href + 'users/' + d.userId + '?auth=' + d.authToken;
           },
           dataType: "json",
           contentType : "application/json"
