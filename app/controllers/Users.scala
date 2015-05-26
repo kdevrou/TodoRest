@@ -1,6 +1,7 @@
 package controllers
 
 import models.User
+import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._
 
@@ -10,16 +11,25 @@ import play.api.mvc._
 object Users extends Controller with Security {
 
   def getAll = HasToken() { _ => currentId => implicit  request =>
+    Ok(Json.toJson(User.findAll))
+  }
+
+  def get(id: Long) = HasToken() { _ => currentId => implicit  request =>
     User.findOneById (currentId) map { user =>
       Ok(Json.toJson(user))
     } getOrElse NotFound (Json.obj("err" -> "User Not Found"))
   }
 
-  def get(id: Long) = TODO
+  def create = HasToken() { _ => currentId => implicit request =>
+    Ok(Json.toJson(""))
+  }
 
-  def create = TODO
+  def update(id: Long) = HasToken() { _ => currentId => implicit request =>
+    Ok(Json.toJson(""))
+  }
 
-  def update(id: Long) = TODO
-
-  def delete(id: Long) = TODO
+  def delete(id: Long) = HasToken() { _ => currentId => implicit request =>
+    User.delete(currentId)
+    Ok(Json.toJson(""))
+  }
 }
