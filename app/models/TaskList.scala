@@ -23,4 +23,30 @@ object List {
       (__ \ "ownerId").write[Long] and
       (__ \ "name").write[String]
     )(unlift(List.unapply))
+
+
+  import anorm._
+  import anorm.~
+  import anorm.SqlParser._
+  import play.api.db.DB
+  import play.api.Play.current
+
+  val parser = {
+    get[Long]("id") ~
+      get[Long]("ownerId") ~
+      get[String]("name")
+  } map {
+    case id ~ ownerId ~ name =>
+      List(id, ownerId, name)
+  }
+
+  val multiParser: ResultSetParser[Seq[List]] = parser *
+
+  def findAll(ownerId: Long): Seq[List] = DB.withConnection( implicit connection =>
+    SQL("SELECT * FROM list WHERE ownerId = {ownerId}").on(
+      'ownerId -> ownerId
+    ).as(multiParser)
+  )
+
+
 }
