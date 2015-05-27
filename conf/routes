@@ -18,11 +18,11 @@ DELETE  /users/:id                  controllers.Users.delete(id: Long)
 
 
 # Lists
-GET     /users/:userId/lists        controllers.Lists.getAll(userId: Long)
-GET     /users/:userId/lists/:id    controllers.Lists.get(userId: Long, id: Long)
-POST    /users/:userId/lists        controllers.Lists.create(userId: Long)
-PUT     /users/:userId/lists/:id    controllers.Lists.update(userId: Long, id: Long)
-DELETE  /users/:userId/lists/:id    controllers.Lists.delete(userId: Long, id: Long)
+GET     /users/:userId/lists        controllers.TaskLists.getAll(userId: Long)
+GET     /users/:userId/lists/:id    controllers.TaskLists.get(userId: Long, id: Long)
+POST    /users/:userId/lists        controllers.TaskLists.create(userId: Long)
+PUT     /users/:userId/lists/:id    controllers.TaskLists.update(userId: Long, id: Long)
+DELETE  /users/:userId/lists/:id    controllers.TaskLists.delete(userId: Long, id: Long)
 
 
 # Tasks
