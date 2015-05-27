@@ -1,10 +1,5 @@
 package models
 
-import java.util.Date
-
-import org.joda.time.DateTime
-import play.Logger
-
 
 /**
  * Created by Kevin on 5/21/2015.
@@ -58,29 +53,35 @@ object User {
 
   /*authenticate user*/
   def findByEmailAndPassword(email: String, password: String): Option[User] = DB.withConnection {
-    Logger.debug(s"received email: $email and password: $password")
     implicit connection =>
       SQL("SELECT * FROM usertable WHERE email = {email} AND password = {password}").on(
         'email -> email, 'password -> password
-      ).as(parser.singleOpt)
+      ).as(parser singleOpt)
   }
 
   /*select all users*/
   def findAll: Seq[User] = DB.withConnection { implicit connection =>
-    SQL("SELECT * FROM usertable where inactive = 0").as(parser *)
+    SQL("SELECT * FROM usertable where inactive = 0").as(multiParser)
   }
 
   /*find user by id*/
   def findOneById(id: Long): Option[User] = DB.withConnection { implicit connection =>
-    SQL("SELECT * FROM usertable WHERE id = {id} and inactive = 0").on('id -> id).as(parser.singleOpt)
+    SQL("SELECT * FROM usertable WHERE id = {id} and inactive = 0").on(
+      'id -> id
+    ).as(parser singleOpt)
   }
 
-  def create(name: String, email: String, password: String): Unit = DB.withConnection { implicit connection =>
-    SQL("INSERT INTO usertable (name, email, password) VALUES ({name}, {email}, {password})")
+  def create(name: String, email: String, password: String): Boolean = DB.withConnection { implicit connection =>
+    SQL(
+      """INSERT INTO usertable
+        | (name, email, password)
+        |VALUES ({name}, {email}, {password})
+      """.stripMargin)
       .on('name -> name, 'email -> email, 'password -> password)
+      .executeUpdate() == 1
   }
 
-  def update(id: Long, name: String, email: String, password: String): Unit = DB.withConnection { implicit connection =>
+  def update(id: Long, name: String, email: String, password: String): Boolean = DB.withConnection { implicit connection =>
     SQL(
       """
         |UPDATE usertable
@@ -90,10 +91,12 @@ object User {
         |WHERE id = {id}
       """.stripMargin)
       .on('id -> id, 'name -> name, 'email -> email, 'password -> password)
+      .executeUpdate() == 1
   }
 
-  def delete(id: Long): Unit = DB.withConnection { implicit connection =>
+  def delete(id: Long): Boolean = DB.withConnection { implicit connection =>
     SQL("UPDATE usertable SET inactive = 1 where id = {id}")
       .on('id -> id)
+      .executeUpdate() == 1
   }
 }

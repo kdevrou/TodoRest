@@ -11,21 +11,20 @@ import scala.concurrent.duration._
 import play.api.Play.current
 
 trait Security { self: Controller =>
-  val AuthTokenHeader = "X-XSRF-TOKEN"
   val AuthTokenCookieKey = "XSRF-TOKEN"
-  val AuthTokenUrlKey = "auth"
 
   /** Checks that a token is either in the header or in the query string */
   def HasToken[A](p: BodyParser[A] = parse.anyContent)(f: String => Long => Request[A] => Result): Action[A] =
     Action(p) { implicit request =>
-      val maybeToken = request.headers.get(AuthTokenHeader).orElse(request.getQueryString(AuthTokenUrlKey))
+      // get a reference to the potential token in the cookie
+      val maybeToken = request.cookies.get(AuthTokenCookieKey)
       maybeToken flatMap { token =>
-        Logger.debug(s"found token: $token")
-        Cache.getAs[Long](token) map { userid =>
-          Logger.debug(s"found userid: $userid")
-          f(token)(userid)(request)
+        // found token
+        Cache.getAs[Long](token.value) map { userid =>
+          // add userid from cache to request
+          f(token.value)(userid)(request)
         }
-      } getOrElse Unauthorized(Json.obj("err" -> "No Token"))
+      } getOrElse Unauthorized(Json.obj("err" -> "No Token")) // send error if token is not present in cookie or cache
     }
 
 }
@@ -43,6 +42,7 @@ object Application extends Controller with Security {
   /** Use an object other than User to hold the form input */
   case class Login(email: String, password: String)
 
+  /** Setup validation rules for binding data to Login object */
   val loginForm = Form(
     mapping(
       "email" -> email,
@@ -69,7 +69,6 @@ object Application extends Controller with Security {
       loginData => {
         User.findByEmailAndPassword(loginData.email, loginData.password) map { user =>
           val token = java.util.UUID.randomUUID().toString
-          Logger.debug(s"assiging token: $token to user ${user.id}")
           Ok(Json.obj(
             "authToken" -> token,
             "userId" -> user.id
@@ -81,9 +80,8 @@ object Application extends Controller with Security {
 
   /** Invalidate the token in the Cache and discard the cookie */
   def logout = Action { implicit request =>
-    request.headers.get(AuthTokenHeader) map { token =>
-      Redirect("/").discardingToken(token)
+    request.cookies.get(AuthTokenCookieKey) map { token =>
+      Redirect("/").discardingToken(token.value)
     } getOrElse BadRequest(Json.obj("err" -> "No Token"))
   }
-
 }

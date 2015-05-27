@@ -15,7 +15,7 @@
           url: "login",
           data: JSON.stringify(data),
           success: function(d, status, xhr){
-            window.location.href = window.location.href + 'users/' + d.userId + '?auth=' + d.authToken;
+            window.location.href = window.location.href + 'users/' + d.userId;
           },
           dataType: "json",
           contentType : "application/json"
