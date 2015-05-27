@@ -5,7 +5,7 @@ CREATE TABLE usertable (
   email                  VARCHAR(100) NOT NULL,
   name                   VARCHAR(255) NOT NULL,
   password               VARCHAR(50) NOT NULL,
-  createdate             DATE DEFAULT GETDATE() NOT NULL,
+  createdate             DATE DEFAULT CURRENT_TIME NOT NULL,
   inactive               TINYINT DEFAULT 0 NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY IDX_ID (email)

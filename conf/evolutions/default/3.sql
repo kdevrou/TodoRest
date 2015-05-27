@@ -4,7 +4,7 @@ CREATE TABLE task (
   id                     BIGINT(20)  NOT NULL AUTO_INCREMENT,
   listId                 BIGINT(20) NOT NULL,
   description            VARCHAR(255) NOT NULL,
-  createdDate            DATE DEFAULT GETDATE() NOT NULL,
+  createdDate            DATE DEFAULT CURRENT_TIME NOT NULL,
   complete               TINYINT DEFAULT 0 NOT NULL,
   PRIMARY KEY (id)
 );
